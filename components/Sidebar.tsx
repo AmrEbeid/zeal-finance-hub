@@ -1,51 +1,58 @@
-
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutDashboard, TrendingUp, BarChart2, Landmark, Target, Users, CreditCard, Globe, LineChart, Settings, LogOut } from "lucide-react";
+import { supabase } from "../lib/supabaseClient";
+import { useRouter } from "next/navigation";
 
 const NAV = [
-  { href: "/",           label: "Control Center",   icon: "⚡" },
-  { href: "/pnl",        label: "P&L Statement",    icon: "📊" },
-  { href: "/revenue",    label: "Revenue",           icon: "💹" },
-  { href: "/cash",       label: "Cash & Runway",     icon: "🏦" },
-  { href: "/budget",     label: "Budget vs Actual",  icon: "🎯" },
-  { href: "/payroll",    label: "Payroll Hub",       icon: "👥" },
-  { href: "/payables",   label: "Payables",          icon: "📋" },
-  { href: "/fx",         label: "FX & Currency",     icon: "💱" },
-  { href: "/valuation",  label: "Valuation",         icon: "🏢" },
-  { href: "/settings",   label: "Settings",          icon: "⚙️" },
+  { href: "/",          label: "Control Center",  icon: LayoutDashboard },
+  { href: "/pnl",       label: "P&L Statement",   icon: TrendingUp      },
+  { href: "/revenue",   label: "Revenue",          icon: BarChart2       },
+  { href: "/cash",      label: "Cash & Runway",    icon: Landmark        },
+  { href: "/budget",    label: "Budget vs Actual", icon: Target          },
+  { href: "/payroll",   label: "Payroll Hub",      icon: Users           },
+  { href: "/payables",  label: "Payables",         icon: CreditCard      },
+  { href: "/fx",        label: "FX & Currency",    icon: Globe           },
+  { href: "/valuation", label: "Valuation",        icon: LineChart       },
+  { href: "/settings",  label: "Settings",         icon: Settings        },
 ];
 
-export function Sidebar() {
+const BUILT = new Set(["/", "/pnl", "/cash", "/budget"]);
+
+export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  async function handleSignOut() {
+    if (supabase) await supabase.auth.signOut();
+    router.push("/login");
+  }
   return (
-    <aside className="flex h-screen w-56 flex-col border-r border-zinc-800 bg-zinc-950 px-3 py-6">
-      <div className="mb-8 px-2">
-        <div className="text-lg font-bold tracking-tight text-white">Zeal Finance</div>
-        <div className="text-xs text-zinc-500">CFO Dashboard</div>
+    <aside className="w-56 flex-shrink-0 bg-gray-900 border-r border-gray-800 flex flex-col h-screen">
+      <div className="px-4 py-5 border-b border-gray-800">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center"><span className="text-white font-bold text-xs">Z</span></div>
+          <div><p className="text-white font-semibold text-sm">Zeal Finance OS</p><p className="text-gray-500 text-xs">Finance Control Center</p></div>
+        </div>
       </div>
-      <nav className="flex flex-col gap-1">
-        {NAV.map((item) => {
-          const active = pathname === item.href;
+      <nav className="flex-1 overflow-y-auto py-3">
+        {NAV.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href;
+          const built = BUILT.has(href);
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all " +
-                (active
-                  ? "bg-indigo-600/20 text-indigo-400 font-medium"
-                  : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100")
-              }
-            >
-              <span className="text-base">{item.icon}</span>
-              {item.label}
+            <Link key={href} href={built ? href : "#"} className={"flex items-center gap-2.5 px-4 py-2 mx-2 rounded-lg text-sm transition-colors " + (active ? "bg-indigo-600 text-white" : !built ? "text-gray-600 cursor-not-allowed pointer-events-none" : "text-gray-400 hover:text-white hover:bg-gray-800")}>
+              <Icon size={15} />
+              <span>{label}</span>
+              {!built && <span className="ml-auto text-xs bg-gray-800 text-gray-500 px-1.5 py-0.5 rounded">Soon</span>}
             </Link>
           );
         })}
       </nav>
-      <div className="mt-auto px-2 text-xs text-zinc-600">
-        Powered by QuickBooks → n8n → Supabase
+      <div className="p-3 border-t border-gray-800">
+        <button onClick={handleSignOut} className="flex items-center gap-2 text-gray-500 hover:text-red-400 text-sm w-full px-2 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+          <LogOut size={14} />Sign out
+        </button>
       </div>
     </aside>
   );

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useFinancialSummary, EntityFilter } from "@/lib/hooks/useFinancialSummary";
 import { KPICard } from "@/components/ui/KPICard";
 import { EntityToggle } from "@/components/EntityToggle";
-import { Sidebar } from "@/components/Sidebar";
+import Sidebar from "@/components/Sidebar";
 import { formatUSD, formatPct, formatMonths, momTone } from "@/lib/format";
 
 export default function ControlCenter() {
