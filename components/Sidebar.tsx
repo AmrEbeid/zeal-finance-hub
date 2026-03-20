@@ -19,7 +19,7 @@ const NAV = [
   { href: "/settings",  label: "Settings",         icon: Settings        },
 ];
 
-const BUILT = new Set(["/", "/pnl", "/cash", "/budget"]);
+const BUILT = new Set(["/", "/pnl", "/revenue", "/cash", "/budget", "/payroll", "/payables"]);
 
 export default function Sidebar() {
   const pathname = usePathname();
